@@ -271,7 +271,7 @@ const Item: FC<Props> = ({ data, item, urlReferer, data: { me, error, stopPollin
           query: { id: item.id }
         }}
       >
-        <a>{item.image && <img src={item.image} layout="responsive" alt={item.title} />}</a>
+        <a>{item.image && <img src={item.image} alt={item.title} />}</a>
       </Link>
     <Title>
       <Link 
