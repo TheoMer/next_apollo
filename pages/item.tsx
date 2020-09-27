@@ -14,8 +14,6 @@ interface Props {
   urlReferer?: string;
 }
 
-// const Item: FC<Props> = ({ query, userAgent, userIP, urlReferer }) => {
-
 const Item: NextPage<Props> = ({ query, userAgent, userIP, urlReferer }) => {
 
   const router = useRouter();

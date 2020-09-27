@@ -71,7 +71,6 @@ interface Props {
     message: string
   };
   urlReferer?: string;
-  //page: string;
   subscribeToNewItems: any;
 }
 

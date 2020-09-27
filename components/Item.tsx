@@ -169,7 +169,7 @@ interface Props {
   urlReferer?: string;
 }
 
-const querySubscribe = (data, client) => {
+const querySubscribe = (subscribeToMore, client) => {
   let items: Item;
   let index;
 
@@ -185,7 +185,7 @@ const querySubscribe = (data, client) => {
     return duplicateItem;
   }
 
-  data.subscribeToMore({
+  subscribeToMore({
   document: DELETE_ITEM_SUBSCRIPTION,
   updateQuery: (previousResult, { subscriptionData }) => {
     if (!subscriptionData.data) return previousResult;
@@ -238,7 +238,7 @@ const querySubscribe = (data, client) => {
 }
 
 // Item
-const Item: FC<Props> = ({ data, item, urlReferer, data: { me, error, stopPolling }}) => {
+const Item: FC<Props> = ({ item, urlReferer, data: { me, error, stopPolling, subscribeToMore }}) => {
   const client = useClient();
   stopPolling(600);
   
@@ -248,7 +248,7 @@ const Item: FC<Props> = ({ data, item, urlReferer, data: { me, error, stopPollin
   useEffect(() => {
     let isSubscribed = true;
     if(isSubscribed) {
-      querySubscribe(data, client);
+      querySubscribe(subscribeToMore, client);
     }
     return () => {
       //querySubscribe.unsubscribe;
@@ -257,7 +257,6 @@ const Item: FC<Props> = ({ data, item, urlReferer, data: { me, error, stopPollin
   },[urlReferer]);
 
   if (error) return <Error error={error} />;
-  // if (loading) return <p>Loading...</p>;
 
   // If (me) determine whether user have admin permissions else hasPerms = false
   let hasPerms;
