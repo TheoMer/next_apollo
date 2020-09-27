@@ -237,8 +237,8 @@ const querySubscribe = (subscribeToMore, client) => {
   });
 }
 
-// Item
-const Item: FC<Props> = ({ item, urlReferer, data: { me, error, stopPolling, subscribeToMore }}) => {
+// ItemComp
+const ItemComp: FC<Props> = ({ item, urlReferer, data: { me, error, stopPolling, subscribeToMore }}) => {
   const client = useClient();
   stopPolling(600);
   
@@ -322,8 +322,8 @@ function arePropsEqual(prevProps, nextProps) {
   return prevProps.item === nextProps.item; 
 }
 
-/*Item.propTypes = {
+/*ItemComp.propTypes = {
   item: PropTypes.object.isRequired,
 };*/
 
-export default memo(userQuery(Item), arePropsEqual);
+export default memo(userQuery(ItemComp), arePropsEqual);

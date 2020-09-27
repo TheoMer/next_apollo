@@ -1,6 +1,6 @@
 import React, { FC, memo, useEffect } from 'react';
 import styled from 'styled-components';
-import Item from './Item';
+import ItemComp from './Item';
 
 const ItemsList = styled.div`
   display: grid;
@@ -63,15 +63,15 @@ interface Item {
 }
 
 interface Props {
-  data: {
+  data?: {
     items: Item[]
   };
-  loading: boolean;
-  error: {
+  loading?: boolean;
+  error?: {
     message: string
   };
   urlReferer?: string;
-  subscribeToNewItems: any;
+  subscribeToNewItems?: any;
 }
 
 // Item list items.
@@ -92,7 +92,7 @@ const ItemsListItems: FC<Props> = ({ data, urlReferer, loading, error, subscribe
 
   if (data.items) {
     return (
-      <ItemsList>{data.items.map(item =><Item item={item} key={item.id} urlReferer={urlReferer} />)}</ItemsList>
+      <ItemsList>{data.items.map(item =><ItemComp item={item} key={item.id} urlReferer={urlReferer} />)}</ItemsList>
     );
   }
 }
