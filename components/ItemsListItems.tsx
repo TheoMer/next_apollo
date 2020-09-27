@@ -77,8 +77,6 @@ interface Props {
 
 // Item list items.
 const ItemsListItems: FC<Props> = ({ data, urlReferer, loading, error, subscribeToNewItems }) => {
-  //const { data, urlReferer, page, loading, error } = props;
-
   useEffect(() => {
     let isSubscribed = true;
     if(isSubscribed) {
@@ -91,8 +89,6 @@ const ItemsListItems: FC<Props> = ({ data, urlReferer, loading, error, subscribe
 
   if (error) return <p>Error: {error.message}</p>;
   
-  // If for some bizzare reason you have deleted the default items from withdata, this
-  // secondary check is required to ensure the page doesn't crash.
   if (!data || (loading && !data.items)) return <p>Loading Items...</p>;
 
   if (data.items) {

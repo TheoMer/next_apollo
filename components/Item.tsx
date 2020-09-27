@@ -170,8 +170,8 @@ interface Props {
 }
 
 const querySubscribe = (data, client) => {
-  let items: Item[];
-  let index: number;
+  let items: Item;
+  let index;
 
   const isDuplicateItem = (deletedItem, existingItems) => {
     let duplicateItem = -1;
@@ -206,13 +206,13 @@ const querySubscribe = (data, client) => {
         // Create a new item list minus the one to delete
         if (previousResult.me.items.length == 0) {
           let data = update(prevFromCache, {
-            items: { $splice: [[[parseInt(index)], 1]] }
+            items: { $splice: [[[index] as any, 1]] }
           });
           client.writeQuery({ query: ALL_ITEMS_QUERY, data });
         } else {
           let newList = update(previousResult, {
             me: {
-              items: { $splice: [[[parseInt(index)], 1]] }
+              items: { $splice: [[[index] as any, 1]] }
             }
           });
           //console.log("newList = ", newList);
@@ -240,7 +240,6 @@ const querySubscribe = (data, client) => {
 // Item
 const Item: FC<Props> = ({ data, item, urlReferer, data: { me, error, stopPolling }}) => {
   const client = useClient();
-  //const { data, item, urlReferer, data: { me, error, startPolling, stopPolling, subscribeToMore }} = props;
   stopPolling(600);
   
   //The sum total of variant items available for purchase.
