@@ -79,6 +79,8 @@ interface ItemVariants {
   item: string;
 }
 
+// The Item shape here must mirror the Item interface shape in ./ItemsListItems.tsx
+// otherwise the item prop in ./ItemsListItems.tsx throws an error
 interface Item {
   id: string;
   title: string;
@@ -87,16 +89,6 @@ interface Item {
   mainDescription: string;
   image: string;
   largeImage: string;
-  image2: string;
-  largeImage2: string;
-  image3: string;
-  largeImage3: string;
-  image4: string;
-  largeImage4: string;
-  image5: string;
-  largeImage5: string;
-  image6: string;
-  largeImage6: string;
   quantity: number;
   Color: Color;
   Size: Size;
@@ -151,9 +143,14 @@ type Response = {
   me: me
 };
 
-type ChildProps = ChildDataProps<{}, Response, {}>
+type InputProps = {
+  item: Item;
+  urlReferer: string;
+};
 
-const userQuery = graphql<{}, Response, {}, ChildProps>(
+type ChildProps = ChildDataProps<InputProps, Response, {}>
+
+const userQuery = graphql<InputProps, Response, {}, ChildProps>(
   CURRENT_USER_QUERY,
   {
     options: { 

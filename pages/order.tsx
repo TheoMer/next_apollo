@@ -1,32 +1,28 @@
-import React, {FC} from "react";
 import { NextPage } from 'next';
-import { useRouter } from "next/router";
+import { useRouter } from 'next/router';
 import PleaseSignIn from '../components/PleaseSignIn';
-import OrderList from '../components/OrderList';
-import { useUser } from '../components/User';
+import Order from '../components/Order';
 
 interface Props {
-  me?: any;
+  query?: {
+    id: string
+  };
   userAgent?: string;
   userIP?: any;
   urlReferer?: string;
-  router?: {
-    asPath: any;
-  }
 }
 
-const OrderPage: NextPage<Props> = ({ userAgent, userIP, urlReferer }) => {
-  const router = useRouter();
-  const user = useUser();
-  const me = user && !user.error ? user.data.me : null;
+const OrderPage: NextPage<Props> = ({ query, userAgent, userIP, urlReferer }) => {
 
-  return (
+  const router = useRouter();
+
+  return(
     <div>
       <PleaseSignIn>
-        <OrderList me={me} user_ip={userIP} user_Agent={userAgent} url={router.asPath} urlReferer={urlReferer} />
+        <Order id={query.id} user_ip={userIP} user_Agent={userAgent} url={router.asPath} urlReferer={urlReferer} />
       </PleaseSignIn>
     </div>
-  )
+  );
 }
 
 //Obtain User IP on initial site load
