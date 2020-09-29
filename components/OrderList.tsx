@@ -213,7 +213,7 @@ const OrderList: FC<Props> = ({ me, user_ip, user_Agent, url, urlReferer, client
   let usersOrders;
 
   if (!orders || (loadingQuery && orders.length == 0)) return <p>Loading your order receipts...</p>;
-  if (errorQuery) return <Error error={errorQuery} />;
+  if (errorQuery) return <Error error={errorQuery} page="" />;
   if (orders.length >= 1) {
     usersOrders =  (
       <div>
@@ -236,7 +236,7 @@ const OrderList: FC<Props> = ({ me, user_ip, user_Agent, url, urlReferer, client
   // item will be the items and not the actual header + search bar
   return (
     <>
-    <IpBrowserDetails client={client} userID={userID} userType={userType} user_ip={user_ip} user_Agent={user_Agent} url={url} urlReferer={urlReferer} />
+    <IpBrowserDetails userID={userID} userType={userType} user_ip={user_ip} user_Agent={user_Agent} url={url} />
     {/*<ScrollArea ref={scrollToComp}>*/}
       {usersOrders}
     {/*</ScrollArea>*/}

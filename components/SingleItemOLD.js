@@ -1,4 +1,4 @@
-import React, { FC, memo, useState, useEffect } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { gql, useQuery  } from '@apollo/client';
 import { useRouter } from 'next/router';
 //import ReactImageMagnify from 'react-image-magnify';
@@ -54,70 +54,6 @@ const SingleItemStylez = styled.div`
     }
   }
 `;
-
-interface Size {
-  id: string;
-  name: string;
-  label: string;
-}
-
-interface Color {
-  id: string;
-  name: string;
-  label: string;
-}
-
-interface User {
-  id: string;
-}
-
-interface ItemVariants {
-  id: string;
-  title: string;
-  price: number;
-  description:  string;
-  mainDescription: string;
-  image: string;
-  largeImage: string;
-  quantity: number;
-  Color: Color;
-  Size: Size;
-  User: User;
-  item: string;
-}
-
-interface Item {
-  id: string;
-  title: string;
-  price: number;
-  description:  string;
-  mainDescription: string;
-  image: string;
-  largeImage: string;
-  image2: string;
-  largeImage2: string;
-  image3: string;
-  largeImage3: string;
-  image4: string;
-  largeImage4: string;
-  image5: string;
-  largeImage5: string;
-  image6: string;
-  largeImage6: string;
-  quantity: number;
-  Color: Color;
-  Size: Size;
-  User: User;
-  itemvariants: ItemVariants[]
-}
-
-interface SingleItemData {
-  item: Item;
-}
-
-interface SingleItemVars {
-  id: string;
-}
 
 const SINGLE_ITEM_QUERY = gql`
   query SINGLE_ITEM_QUERY($id: String!) {
@@ -185,16 +121,8 @@ const SINGLE_ITEM_QUERY = gql`
   }
 `;
 
-interface Props {
-  id: string;
-  user_ip: string;
-  user_Agent: string;
-  url: string; 
-  urlReferer: string;
-}
-
 //SingleItem
-const SingleItem:FC<Props> = ({ id: singleItemID, user_ip, user_Agent, url, urlReferer }) => {
+const SingleItem = props => {
   const router = useRouter();
 
   // Client
@@ -242,7 +170,7 @@ const SingleItem:FC<Props> = ({ id: singleItemID, user_ip, user_Agent, url, urlR
   }
 
   const { id } = router.query;
-  //const { user_ip, user_Agent, url, urlReferer } = props; //From pages/index.js
+  const { user_ip, user_Agent, url, urlReferer } = props; //From pages/index.js
 
   useEffect(() => {
     setCartClick(true); // 2. The user has clicked a link in the cart, so update the image correctly.
@@ -252,33 +180,33 @@ const SingleItem:FC<Props> = ({ id: singleItemID, user_ip, user_Agent, url, urlR
   const user = useUser();
 
   // SINGLE ITEM QUERY
-  const { data: dataSingleItem, error: erroSingleItem, loading: loadingSingleItem } = useQuery<SingleItemData, SingleItemVars>(
+  const { data: dataSingleItem, error: erroSingleItem, loading: loadingSingleItem } = useQuery(
     SINGLE_ITEM_QUERY,
     { 
       variables: {  
-        id: singleItemID
+        id: props.id
       }
     }
   );
 
   // User hook Variables
   if (!user) return null;
-  if (user.error) return <Error error={user.error} page="" />;
+  if (user.error) return <Error error={user.error} />;
 
   const me = user.data.me;
 
   // Pull the required item out of cache if it exits
   // This will only work for an admin
-  let userItem = me && me.items.filter(item => item.id === singleItemID);
+  let userItem = me && me.items.filter(item => item.id === props.id);
 
   const userID = me && me.id;
   const userType = (me && me.permissions2.some(permission => ['GUEST_USER'].includes(permission))) ? 'GUEST_USER' : 'USER';
 
 
   // SINGLE ITEM QUERY Variables
-  if (erroSingleItem) return <Error error={erroSingleItem} page="" />;
+  if (erroSingleItem) return <Error error={erroSingleItem} />;
   if ((!userItem || userItem.length == 0) && (loadingSingleItem && !dataSingleItem.item)) return <p>Loading Item...</p>;
-  if (!dataSingleItem.item && (!userItem || userItem.length == 0)) return <p>No Item Found for {singleItemID}</p>;
+  if (!dataSingleItem.item && (!userItem || userItem.length == 0)) return <p>No Item Found for {props.id}</p>;
   
   const item = !userItem || userItem.length == 0 ? dataSingleItem.item : userItem[0];
   
@@ -287,7 +215,7 @@ const SingleItem:FC<Props> = ({ id: singleItemID, user_ip, user_Agent, url, urlR
 
   return (
     <>
-    <IpBrowserDetails userID={userID} userType={userType} user_ip={user_ip} user_Agent={user_Agent} url={url} />
+    <IpBrowserDetails client={client} userID={userID} userType={userType} user_ip={user_ip} user_Agent={user_Agent} url={url} urlReferer={urlReferer} />
     {item && (
         // Initial setting of favicon page title is done in components/Meta.js
         <div className="react-slick">

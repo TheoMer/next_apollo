@@ -1,6 +1,6 @@
-import React, { FC, memo, useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 import { gql } from '@apollo/client';
-import { graphql, ChildDataProps } from '@apollo/client/react/hoc';
+import { graphql } from '@apollo/client/react/hoc';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import update from 'immutability-helper';
@@ -35,67 +35,6 @@ import { useClient } from '../lib/Client';
     <HeaderImg src={'https://cdn.cnn.com/cnnnext/dam/assets/180301124611-fedex-logo.png'} />
 */
 
-interface Size {
-  id: string;
-  name: string;
-  label: string;
-}
-
-interface Color {
-  id: string;
-  name: string;
-  label: string;
-}
-
-interface address {
-  id: string;
-  card_name: string;
-  address_line: string;
-  city: string;
-  postcode: string;
-  country: string;
-}
-
-interface order {
-  id
-}
-
-interface User {
-  id: string;
-}
-
-interface ItemVariants {
-  id: string;
-  title: string;
-  price: number;
-  description:  string;
-  mainDescription: string;
-  image: string;
-  largeImage: string;
-  quantity: number;
-  Color: Color;
-  Size: Size;
-  User: User;
-  item: string;
-}
-
-// The Item shape here must mirror the Item interface shape in ./ItemsListItems.tsx
-// otherwise the item prop in ./ItemsListItems.tsx throws an error
-interface Item {
-  id: string;
-  title: string;
-  price: number;
-  description:  string;
-  mainDescription: string;
-  image: string;
-  largeImage: string;
-  quantity: number;
-  Color: Color;
-  Size: Size;
-  User: User;
-  itemvariants: ItemVariants[]
-}
-
 const DELETE_ITEM_SUBSCRIPTION = gql`
   subscription {
     itemDeleted {
@@ -108,49 +47,7 @@ const DELETE_ITEM_SUBSCRIPTION = gql`
   }
 `;
 
-enum Permissions {
-  ADMIN,
-  GUEST_USER,
-  ITEMCREATE,
-  ITEMDELETE,
-  ITEMUPDATE,
-  PERMISSIONUPDATE,
-  USER
-}
-
-interface permissions2 {
-  permissions2: Permissions
-}
-
-type me = {
-  id: string;
-  email: string;
-  name: string;
-  password: string;
-  permissions2: permissions2;
-  address: address;
-  order: order;
-  items: Item[];
-  cart: {
-    id: string;
-    quantity: string;
-    ItemVariants: ItemVariants[];
-    Item: Item[]
-  }
-}
-
-type Response = {
-  me: me
-};
-
-type InputProps = {
-  item: Item;
-  urlReferer: string;
-};
-
-type ChildProps = ChildDataProps<InputProps, Response, {}>
-
-const userQuery = graphql<InputProps, Response, {}, ChildProps>(
+const userQuery = graphql(
   CURRENT_USER_QUERY,
   {
     options: { 
@@ -160,14 +57,8 @@ const userQuery = graphql<InputProps, Response, {}, ChildProps>(
   }
 );
 
-interface Props {
-  data?: any;
-  item?: Item;
-  urlReferer?: string;
-}
-
 const querySubscribe = (subscribeToMore, client) => {
-  let items: Item;
+  let items;
   let index;
 
   const isDuplicateItem = (deletedItem, existingItems) => {
@@ -203,13 +94,13 @@ const querySubscribe = (subscribeToMore, client) => {
         // Create a new item list minus the one to delete
         if (previousResult.me.items.length == 0) {
           let data = update(prevFromCache, {
-            items: { $splice: [[[index] as any, 1]] }
+            items: { $splice: [[[parseInt(index)], 1]] }
           });
           client.writeQuery({ query: ALL_ITEMS_QUERY, data });
         } else {
           let newList = update(previousResult, {
             me: {
-              items: { $splice: [[[index] as any, 1]] }
+              items: { $splice: [[[parseInt(index)], 1]] }
             }
           });
           //console.log("newList = ", newList);
@@ -234,8 +125,8 @@ const querySubscribe = (subscribeToMore, client) => {
   });
 }
 
-// ItemComp
-const ItemComp: FC<Props> = ({ item, urlReferer, data: { me, error, stopPolling, subscribeToMore }}) => {
+// Item
+const Item = ({ item, urlReferer, data: { me, error, stopPolling, subscribeToMore } })=> {
   const client = useClient();
   stopPolling(600);
   
@@ -253,7 +144,7 @@ const ItemComp: FC<Props> = ({ item, urlReferer, data: { me, error, stopPolling,
     };
   },[urlReferer]);
 
-  if (error) return <Error error={error} page="" />;
+  if (error) return <Error error={error} />;
 
   // If (me) determine whether user have admin permissions else hasPerms = false
   let hasPerms;
@@ -319,8 +210,8 @@ function arePropsEqual(prevProps, nextProps) {
   return prevProps.item === nextProps.item; 
 }
 
-/*ItemComp.propTypes = {
+Item.propTypes = {
   item: PropTypes.object.isRequired,
-};*/
+};
 
-export default memo(userQuery(ItemComp), arePropsEqual);
+export default memo(userQuery(Item), arePropsEqual);

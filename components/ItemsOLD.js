@@ -1,60 +1,14 @@
-import React, { FC, memo } from 'react';
+import React, { memo } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import Pagination from './Pagination';
 import { perPage } from '../config';
-//import { useCart } from './LocalState';
+import { useCart } from './LocalState';
 import IpBrowserDetails from './IpBrowserDetails';
 import { useUser } from './User';
 import ItemsListItems from './ItemsListItems';
 import { useClient } from '../lib/Client';
 import Error from './ErrorMessage';
-
-interface Size {
-  id: string;
-  name: string;
-  label: string;
-}
-
-interface Color {
-  id: string;
-  name: string;
-  label: string;
-}
-
-interface User {
-  id: string;
-}
-
-interface ItemVariants {
-  id: string;
-  title: string;
-  price: number;
-  description:  string;
-  mainDescription: string;
-  image: string;
-  largeImage: string;
-  quantity: number;
-  Color: Color;
-  Size: Size;
-  User: User;
-  item: string;
-}
-
-interface Item {
-  id: string;
-  title: string;
-  price: number;
-  description:  string;
-  mainDescription: string;
-  image: string;
-  largeImage: string;
-  quantity: number;
-  Color: Color;
-  Size: Size;
-  User: User;
-  itemvariants: ItemVariants[]
-}
 
 // Taken from: https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/pagination#do-i-always-have-to-skip-1
 // Do I always have to skip: 1?
@@ -63,18 +17,6 @@ interface Item {
 // Without skip: 1, the second query returns 6 results after (and including) the cursor
 // So page 1 would be 24, 25, 26, 27, 28, 29 and the second page would start 29, 30, 31, 32, 33, 34
 // In other words, the last item displayed on page 1 would be the first item displayed on page 2
-
-interface AllItemsData {
-  items: Item[];
-  itemWatch: {
-    type: string;
-    item: Item;
-  }
-}
-
-interface AllItemsVars {
-  skip: number;
-}
 
 const ALL_ITEMS_QUERY = gql`
   query ALL_ITEMS_QUERY($skip: Int = 0, $first: Int = ${perPage}) {
@@ -183,10 +125,6 @@ const ALL_ITEMS_SUBSCRIPTION = gql`
   }
 `;
 
-interface LocalItemData {
-  items: Item[];
-}
-
 const LOCAL_STATE_QUERY = gql`
   query {
     items @client {
@@ -236,19 +174,11 @@ const ItemsList = styled.div`
   }
 `;
 
-interface Props {
-  page: number;
-  user_ip: string;
-  user_Agent: string;
-  url: string;
-  urlReferer?: string;
-}
-
 //Items.
-const Items: FC<Props> = ({ page, user_ip, user_Agent, url, urlReferer }) => {
+const Items = props => {
   const client = useClient();
   //const { userip } = useCart(); //useContext(UserContext); // From pages/_app.js
-  //const { user_ip, user_Agent, url, urlReferer } = props; // From pages/index.js
+  const { user_ip, user_Agent, url, urlReferer } = props; // From pages/index.js
 
   const ScrollToComp = el => el && el.scrollTo(0, 190);
 
@@ -256,30 +186,30 @@ const Items: FC<Props> = ({ page, user_ip, user_Agent, url, urlReferer }) => {
   const user = useUser();
 
   // LocalState Query
-  const { data: cachedItem, error: errorQuery, loading: loadingQuery } = useQuery<LocalItemData, {}>(
+  const { data: cachedItem, error: errorQuery, loading: loadingQuery } = useQuery(
     LOCAL_STATE_QUERY,
   );
 
   // ALL Items Query
-  const { subscribeToMore, ...result } = useQuery<AllItemsData, AllItemsVars>(
+  const { subscribeToMore, ...result } = useQuery(
     ALL_ITEMS_QUERY,
     { 
       variables: {  
-        skip: page * perPage - perPage, 
+        skip: props.page * perPage - perPage, 
       } 
     }
   );
 
   // User hook variables
   if (!user) return null;
-  if (user.error) return <Error error={user.error} page="" />;
+  if (user.error) return <Error error={user.error} />;
 
   const me = user.data.me;
   let userID = me && me.id;
   let userType = (me && me.permissions2.some(permission => ['GUEST_USER'].includes(permission))) ? 'GUEST_USER' : 'USER';
 
   // LocalState Query Variables
-  if (errorQuery) return <Error error={errorQuery} page="" />;
+  if (errorQuery) return <Error error={errorQuery} />;
 
   // ALL Items Query Variables
   if (result.error) return <p>Error: {result.error.message}</p>;
@@ -289,10 +219,10 @@ const Items: FC<Props> = ({ page, user_ip, user_Agent, url, urlReferer }) => {
 
   return (
     <>
-    <IpBrowserDetails userID={userID} userType={userType} user_ip={user_ip} user_Agent={user_Agent} url={url} />
+    <IpBrowserDetails client={client} userID={userID} userType={userType} user_ip={user_ip} user_Agent={user_Agent} url={url} urlReferer={urlReferer} />
     <Center>
       <div ref={ScrollToComp}></div>
-      <Pagination page={page} />
+      <Pagination page={props.page} />
       <ItemsListItems
         //networkStatus={result.networkStatus}
         loading={result.loading}
@@ -327,7 +257,7 @@ const Items: FC<Props> = ({ page, user_ip, user_Agent, url, urlReferer }) => {
           })
         }
       />
-      <Pagination page={page} />
+      <Pagination page={props.page} />
     </Center>
     </>
   );
