@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { FC, memo, useState } from 'react';
 import { gql, useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
@@ -33,7 +33,14 @@ const RESET_MUTATION = gql`
   }
 `;
 
-const Reset = props => {
+interface Props {
+  user_ip: string; 
+  user_Agent: string; 
+  url: string;
+  resetToken: string;
+}
+
+const Reset: FC<Props> = ({ resetToken, user_ip, user_Agent, url }) => {
   // Client
   const client = useClient();
 
@@ -50,9 +57,9 @@ const Reset = props => {
     });
   };
 
-  console.log("resetToken = ", props.resetToken);
+  //console.log("resetToken = ", props.resetToken);
 
-  const { user_ip, user_Agent, url, urlReferer } = props; // From pages/reset.js
+  //const { user_ip, user_Agent, url, urlReferer } = props; // From pages/reset.js
 
   // User hook
   const user = useUser();
@@ -64,7 +71,7 @@ const Reset = props => {
   resetPasswordVariables
   >(RESET_MUTATION, {
     variables: {
-      resetToken: props.resetToken,
+      resetToken: resetToken,
       password: state.password,
       confirmPassword: state.confirmPassword
     },
