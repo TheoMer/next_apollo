@@ -32,6 +32,82 @@ const Form = styled.form`
   fieldset { border:0px }
 `;
 
+interface Color {
+  __typename: string;
+  id: string;
+  name: string;
+  label: string;
+}
+
+interface Size {
+  __typename: string;
+  id: string;
+  name: string;
+  label: string;
+}
+
+interface Item {
+  __typename: string;
+  id: string;
+  price: number;
+  image: string;
+  largeImage: string;
+  title: string;
+  description: string;
+  mainDescription: string;
+  quantity: number;
+  Color: Color;
+  Size: Size;
+  itemvariants: {
+    __typename: string;
+    id: string;
+    price: number;
+    image: string;
+    largeImage: string;
+    title: string;
+    description: string;
+    mainDescription: string;
+    quantity: number;
+    Color: Color;
+    Size: Size;
+    /*Item: {
+      id: string
+    }*/
+    item: string;
+  }
+}
+
+interface ItemVariants {
+  __typename: string;
+  id: string;
+  price: number;
+  image: string;
+  largeImage: string;
+  title: string;
+  description: string;
+  mainDescription: string;
+  quantity: number;
+  Color: Color;
+  Size: Size;
+  /*Item: {
+    __typename: string;
+    id: string
+  }*/
+  item: string;
+}
+
+interface addItemVariantsToCartData {
+  __typename: string;
+  id: string;
+  quantity: number;
+  Item: Item;
+  ItemVariants: ItemVariants;
+}
+
+interface addItemVariantsToCartVariables {
+  id: string;
+}
+
 const ADD_TO_CART_VARIANTS_MUTATION = gql`
   mutation addItemVariantsToCart($id: String!) {
     addItemVariantsToCart(id: $id) {
@@ -219,7 +295,10 @@ const AddToCartVariantOrder = props => {
   }, [id]);
 
   // ADD TO CART VARIANTS MUTATION
-  const [addItemVariantsToCart, { loading, error }] = useMutation(ADD_TO_CART_VARIANTS_MUTATION, {
+  const [addItemVariantsToCart, { loading, error }] = useMutation<
+  {addItemVariantsToCart: addItemVariantsToCartData, __typename: string},
+  addItemVariantsToCartVariables
+    >(ADD_TO_CART_VARIANTS_MUTATION, {
     variables: { id: variant },
     update: update,
     optimisticResponse: {
@@ -244,10 +323,11 @@ const AddToCartVariantOrder = props => {
           largeImage: index === -1? itemDetails.largeImage : itemDetails.itemvariants[index].largeImage,
           Color: index === -1? itemDetails.color : itemDetails.itemvariants[index].color,
           Size: index === -1? itemDetails.size : itemDetails.itemvariants[index].size, 
-          Item: {
+          /*Item: {
             __typename: 'Item',
             ...itemDetails
-          }
+          }*/
+          item: index === -1? itemDetails.item : itemDetails.itemvariants[index].item, 
         },
       },
     },
@@ -295,14 +375,14 @@ const AddToCartVariantOrder = props => {
 
   return (
     <Form>
-      <table border="0" width="100%" cellPadding="0" cellSpacing="0" cellPadding="0">
+      <table width="100%" cellPadding="0" cellSpacing="0">
         <tbody>
           <tr>
             <td width="51.5%" align="left" valign="top">
-              <fieldset disabled={loading} aria-busy={loading} border="0">
+              <fieldset disabled={loading} aria-busy={loading}>
                 <label htmlFor="variant">
                   <select
-                    type="string"
+                    //type="string"
                     id="variant"
                     name="variant"
                     placeholder="Select a Product"
