@@ -23,8 +23,8 @@ const REMOVE_FROM_CART_MUTATION = gql`
   }
 `;
 
-const RemoveFromCart = props => {
-  const { id, itemId, loadingFromCartItem } = props;
+const RemoveFromCart = ({ id, itemId, loadingFromCartItem }) => {
+  //const { id, itemId, loadingFromCartItem } = props;
 
   // This holds the loading state (loadingToCartFunc) of an item added to the cart in AddToCartVariantOrder.js
   const { loadingToCart } = useCart();

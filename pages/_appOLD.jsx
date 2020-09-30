@@ -1,11 +1,11 @@
+import React from 'react';
 import App, { Container } from 'next/app';
 import Page from '../components/Page';
 import { ApolloProvider } from '@apollo/client';
 import withData from '../lib/withData';
 import { CartStateProvider } from '../components/LocalState';
 // Loading in css here as as it acts as an initialisation process.
-import SingleItemStyles from '../public/static/SingleItemStyles.css';
-import { any } from 'prop-types';
+// import SingleItemStyles from '../public/static/SingleItemStyles.css';
 
 /*class MyApp extends App {
 
@@ -49,7 +49,7 @@ function MyApp(props) {
 // every page in the app will be server-side rendered because data has to be fetched before rendering
 MyApp.getInitialProps = async props => {
   const { Component, ctx } = props;
-  let pageProps: any;
+  let pageProps = {};
 
   // console.log('this runs first, before the App is rendered');
   if (Component.getInitialProps) {

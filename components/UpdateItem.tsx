@@ -175,10 +175,11 @@ interface Props {
   user_ip: string; 
   user_Agent: string; 
   url: string;
-  title: string; // For propTypes check at bottom
+  /*title: string; // For propTypes check at bottom
   price: number; // For propTypes check at bottom
   description: string; // For propTypes check at bottom
   mainDescription: string; // For propTypes check at bottom
+  */
 }
 
 // UpdateItem
@@ -472,12 +473,12 @@ const UpdateItem: FC<Props> = ({ id, user_ip, user_Agent, url }) => {
   );
 }
 
-UpdateItem.propTypes = { 
+/*UpdateItem.propTypes = { 
   title: PropTypes.string, 
   price: PropTypes.number, 
   description: PropTypes.string,
   mainDescription: PropTypes.string,
-}
+}*/
 
 export default memo(UpdateItem);
 export { UPDATE_ITEM_MUTATION };

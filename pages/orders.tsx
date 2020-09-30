@@ -10,9 +10,6 @@ interface Props {
   userAgent?: string;
   userIP?: any;
   urlReferer?: string;
-  router?: {
-    asPath: any;
-  }
 }
 
 const OrderPage: NextPage<Props> = ({ userAgent, userIP, urlReferer }) => {

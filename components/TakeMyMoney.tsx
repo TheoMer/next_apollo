@@ -71,7 +71,7 @@ function TakeMyMoney() {
 function useCheckout() {
   const router = useRouter();
   const stripeCheck = useStripe();
-  const [error, setError] = useState();
+  const [error, setError] = useState(undefined);
   const [loading, setLoading] = useState(false);
   const elements = useElements();
   const { closeCart } = useCart();
@@ -195,7 +195,7 @@ function CheckoutForm() {
     const { handleSubmit, error, loading } = useCheckout();
     const user = useUser();
     const me = user.data.me;
-    let errorCheck = error && (error as any).type == 'validation_error' ? true : false;
+    let errorCheck = error?.type == 'validation_error' ? true : false;
     let safeLoad = loading && errorCheck != true ? true : false;
 
     return (
