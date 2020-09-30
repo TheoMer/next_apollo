@@ -37,13 +37,6 @@ const CartStyles = styled.div`
       margin: 0;
     }
   }
-  buttonfooter {
-    position: fixed;
-    bottom: 0;
-    width: 91%;
-    margin-bottom: 0rem;
-    margin-left: 2.5rem;
-  }   
   ul {
     margin: 0;
     padding: 0;
